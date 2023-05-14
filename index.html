@@ -1,45 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152.png">
-   <title>かいさんボタン</title>
-   <meta name="apple-mobile-web-app-capable" content="yes" />
-   <meta name="apple-mobile-web-app-status-bar-style" content="default">
    <style>
-       html, body {
-           margin: 0;
-           padding: 0;
-           overflow: hidden;
+       #game-container {
+           position: relative;
+           width: 100%;
+           height: 100vh;
+           border: 1px solid black;
        }
 
-       img {
-           position: fixed;
-           top: 0;
-           left: 0;
-           width: 100%;
-           height: 100%;
-           object-fit: fill;
-           z-index: 9999;
+       #player {
+           position: absolute;
+           width: 10vw;
+           height: 10vw;
+           background-color: blue;
+           border-radius: 50%;
+           transform: translate(-50%, -50%);
+           touch-action: none;
+       }
+
+       .enemy {
+           position: absolute;
+           width: 10vw;
+           height: 10vw;
+           background-image: url('teki.png');
+           background-size: cover;
+           touch-action: none;
        }
    </style>
    <script>
-       function playSoundAndChangeImage() {
-           var audio = new Audio('sound.mp3');
-           audio.play();
+       var player = document.getElementById('player');
+       var gameContainer = document.getElementById('game-container');
+       var score = 0;
 
-           var image = document.getElementById('myImage');
-           var originalSrc = image.src;
+       gameContainer.addEventListener('touchmove', function(e) {
+           var touch = e.touches[0];
+           var x = touch.clientX - gameContainer.offsetLeft;
+           var y = touch.clientY - gameContainer.offsetTop;
+           player.style.left = x + 'px';
+           player.style.top = y + 'px';
+       });
 
-           image.src = 'newImage.png';
+       gameContainer.addEventListener('click', function() {
+           var enemy = document.createElement('div');
+           enemy.classList.add('enemy');
+           enemy.style.left = Math.random() * (gameContainer.offsetWidth - 100) + 'px';
+           enemy.style.top = Math.random() * (gameContainer.offsetHeight - 100) + 'px';
+           gameContainer.appendChild(enemy);
 
-           setTimeout(function() {
-               image.src = originalSrc;
-           }, 3000);
-       }
+           enemy.addEventListener('click', function() {
+               gameContainer.removeChild(enemy);
+               score++;
+               console.log('Score: ' + score);
+           });
+       });
    </script>
 </head>
 <body>
-   <img id="myImage" src="oldImage.png" alt="ボタン画像" onclick="playSoundAndChangeImage()">
+   <div id="game-container">
+       <div id="player"></div>
+   </div>
 </body>
 </html>
